@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract SweeperBot {
+contract GoxRecoveryBot {
     address public goxed;
     address public recovery;
     IERC20 public token;
@@ -16,13 +16,13 @@ contract SweeperBot {
 
     //set token
     function setToken(address _token) external {
-        require(msg.sender == recovery, "SweeperBot: Not recovery");
+        require(msg.sender == recovery, "GoxRecoveryBot: Not recovery");
         token = IERC20(_token);
     }
 
     function sweep() external {
         uint256 balance = token.balanceOf(goxed);
-        require(balance > 0, "SweeperBot: No tokens to sweep");
+        require(balance > 0, "GoxRecoveryBot: No tokens to sweep");
         token.transferFrom(goxed, recovery, balance);
     }
 

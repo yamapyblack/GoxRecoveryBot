@@ -5,8 +5,8 @@ async function main() {
   const recovery = "";
   const token = "";
 
-  const SweeperBot = await ethers.getContractFactory("SweeperBot");
-  const sweeperBot = await SweeperBot.deploy(goxed, recovery, token);
+  const GoxRecoveryBot = await ethers.getContractFactory("GoxRecoveryBot");
+  const sweeperBot = await GoxRecoveryBot.deploy(goxed, recovery, token);
 
   await sweeperBot.deployed();
   console.log("deployed to:", sweeperBot.address);

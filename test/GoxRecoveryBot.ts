@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("SweeperBot", function () {
+describe("GoxRecoveryBot", function () {
   let alice;
   let bob;
   let carol;
@@ -13,8 +13,12 @@ describe("SweeperBot", function () {
     const ERC20Mock = await ethers.getContractFactory("ERC20Mock");
     token = await ERC20Mock.deploy("Token", "Token", 18);
 
-    const SweeperBot = await ethers.getContractFactory("SweeperBot");
-    bot = await SweeperBot.deploy(alice.address, bob.address, token.address);
+    const GoxRecoveryBot = await ethers.getContractFactory("GoxRecoveryBot");
+    bot = await GoxRecoveryBot.deploy(
+      alice.address,
+      bob.address,
+      token.address
+    );
   });
 
   describe("Sweep", function () {
@@ -31,6 +35,20 @@ describe("SweeperBot", function () {
       expect(await token.balanceOf(bob.address)).equals(
         ethers.utils.parseEther("10")
       );
+    });
+  });
+
+  describe("Checker", function () {
+    it("False", async function () {
+      let canExec;
+      [canExec] = await bot.checker();
+      expect(canExec).equals(false);
+    });
+    it("Success", async function () {
+      await token.mint(alice.address, ethers.utils.parseEther("10"));
+      let canExec;
+      [canExec] = await bot.checker();
+      expect(canExec).equals(true);
     });
   });
 
