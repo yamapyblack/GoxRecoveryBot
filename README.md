@@ -1,6 +1,8 @@
-# Sample Hardhat Project
+# Gox Recovery Bot
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+- approve token from address goxed to recovery contract
+- set Gelato
+- sweep
 
 Try running some of the following tasks:
 
