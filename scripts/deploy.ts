@@ -3,13 +3,12 @@ import { ethers } from "hardhat";
 async function main() {
   const goxed = "";
   const recovery = "";
-  const token = "";
 
   const GoxRecoveryBot = await ethers.getContractFactory("GoxRecoveryBot");
-  const sweeperBot = await GoxRecoveryBot.deploy(goxed, recovery, token);
+  const goxRecoveryBot = await GoxRecoveryBot.deploy(goxed, recovery);
 
-  await sweeperBot.deployed();
-  console.log("deployed to:", sweeperBot.address);
+  await goxRecoveryBot.deployed();
+  console.log("deployed to:", goxRecoveryBot.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

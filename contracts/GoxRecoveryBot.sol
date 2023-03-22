@@ -6,30 +6,50 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract GoxRecoveryBot {
     address public goxed;
     address public recovery;
-    IERC20 public token;
+    IERC20[] public tokens;
 
-    constructor(address _goxed, address _recovery, address _token) {
+    constructor(address _goxed, address _recovery) {
         goxed = _goxed;
         recovery = _recovery;
-        token = IERC20(_token);
     }
 
-    //set token
-    function setToken(address _token) external {
+    function _onlyRecovery() internal view {
         require(msg.sender == recovery, "GoxRecoveryBot: Not recovery");
-        token = IERC20(_token);
     }
 
-    //set goxed
+    // onlyRecovery functions
+    function pushToken(address _token) external {
+        _onlyRecovery();
+        tokens.push(IERC20(_token));
+    }
+
+    function popToken(address _token) external {
+        _onlyRecovery();
+        uint256 len = tokens.length;
+        for (uint256 i = 0; i < len; i++) {
+            if (address(tokens[i]) == _token) {
+                tokens[i] = tokens[len - 1];
+                tokens.pop();
+                break;
+            }
+        }
+    }
+
     function setGoxed(address _goxed) external {
-        require(msg.sender == recovery, "GoxRecoveryBot: Not recovery");
+        _onlyRecovery();
         goxed = _goxed;
     }
 
     function sweep() external {
-        uint256 balance = token.balanceOf(goxed);
-        require(balance > 0, "GoxRecoveryBot: No tokens to sweep");
-        token.transferFrom(goxed, recovery, balance);
+        //check balance of tokens
+        uint256 len = tokens.length;
+        for (uint256 i = 0; i < len; i++) {
+            IERC20 token = tokens[i];
+            uint256 balance = token.balanceOf(goxed);
+            if (balance > 0) {
+                token.transferFrom(goxed, recovery, balance);
+            }
+        }
     }
 
     function checker()
@@ -37,12 +57,18 @@ contract GoxRecoveryBot {
         view
         returns (bool canExec, bytes memory execPayload)
     {
-        if (token.balanceOf(goxed) > 0) {
-            canExec = true;
-            execPayload = abi.encodeWithSignature("sweep()");
-        } else {
-            canExec = false;
-            execPayload = "cannot sweep";
+        //check balance of tokens
+        uint256 len = tokens.length;
+        for (uint256 i = 0; i < len; i++) {
+            IERC20 token = tokens[i];
+            if (token.balanceOf(goxed) > 0) {
+                canExec = true;
+                execPayload = abi.encodeWithSignature("sweep()");
+                return (canExec, execPayload);
+            }
         }
+
+        canExec = false;
+        execPayload = "cannot sweep";
     }
 }
