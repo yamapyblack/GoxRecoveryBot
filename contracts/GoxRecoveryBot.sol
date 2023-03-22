@@ -20,6 +20,12 @@ contract GoxRecoveryBot {
         token = IERC20(_token);
     }
 
+    //set goxed
+    function setGoxed(address _goxed) external {
+        require(msg.sender == recovery, "GoxRecoveryBot: Not recovery");
+        goxed = _goxed;
+    }
+
     function sweep() external {
         uint256 balance = token.balanceOf(goxed);
         require(balance > 0, "GoxRecoveryBot: No tokens to sweep");
