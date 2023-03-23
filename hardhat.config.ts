@@ -15,6 +15,8 @@ const config: HardhatUserConfig = {
     arb: {
       url: `${process.env.ARB_URL!}`,
       accounts: accounts(),
+      gasPrice: 20000000000, //20Gwei
+      timeout: 40000,
     },
   },
   solidity: {
@@ -25,6 +27,9 @@ const config: HardhatUserConfig = {
         runs: 200,
       },
     },
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
